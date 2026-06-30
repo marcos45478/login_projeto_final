@@ -4,27 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuários - Admin</title>
-    <link rel="stylesheet" href="../Static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <h1>Lista de Usuários</h1>
+    <div class="container table-wrapper">
+        <h1>Lista de Usuários</h1>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Cargo</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="listaUsuarios">
-            <!-- Usuários serão inseridos pelo JavaScript -->
-        </tbody>
-    </table>
-
-    <script src="../Static/js/usuarios.js"></script>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Cargo</th>
+                    <th>CRM/COREM</th>
+                    <th>Admin</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario_item in usuarios %}
+                    <tr>
+                        <td>{{ usuario_item[0] }}</td>
+                        <td>{{ usuario_item[1] }}</td>
+                        <td>{{ usuario_item[2] }}</td>
+                        <td>{{ usuario_item[3] }}</td>
+                        <td>{{ usuario_item[4] }}</td>
+                        <td>{{ 'Sim' if usuario_item[6] == 'sim' else 'Não' }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6">Nenhum usuário cadastrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

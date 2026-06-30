@@ -1,27 +1,30 @@
-import json
+import sqlite3
 import os
 
-class FakeDB:
-    def __init__(self):
-        self.arquivo = "usuarios.json"
 
-        if not os.path.exists(self.arquivo):
-            with open(self.arquivo, 'w') as f:
-                json.dump([], f)
+class Database:
+    def __init__(self, db_path=None):
+        base_dir = os.path.dirname(__file__)
+        self.db_path = db_path or os.path.join(base_dir, "database.db")
 
-                def ler_usuarios(self):
-                    with open(self.arquivo, 'r') as f:
-                        return json.load(f)
-                    
-        def salvar_usuario(self, usuario):
-            usuarios = self.ler_usuarios()
-            usuarios.append(usuario)
-            with open(self.arquivo, 'w') as f:
-                json.dump(usuarios, f, indent=4)
+    def conectar(self):
+        return sqlite3.connect(self.db_path, timeout=10, check_same_thread=False)
 
-                def buscar_usuario(self, email):
-                    usuarios = self.ler_usuarios()
-                    for usuario in usuarios:
-                        if usuario['email'] == email:
-                            return usuario
-                    return None
+    def criar_tabela(self):
+        with self.conectar() as conn:
+            conn.execute(
+                '''
+                CREATE TABLE IF NOT EXISTS usuarios (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    nome TEXT,
+                    email TEXT UNIQUE,
+                    cargo TEXT,
+                    crm_coren TEXT,
+                    senha TEXT,
+                    admin TEXT DEFAULT 'nao'
+                )
+                '''
+            )
+            columns = [row[1] for row in conn.execute("PRAGMA table_info(usuarios)")]
+            if "admin" not in columns:
+                conn.execute("ALTER TABLE usuarios ADD COLUMN admin TEXT DEFAULT 'nao'")
